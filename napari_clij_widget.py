@@ -46,10 +46,10 @@ with napari.gui_qt():
     def clij_filter(input: Image, operation: gpu_filter, x: float = 0, y: float = 0,
                     z: float = 0) -> Image:
         if input:
-            cle_input = cle.push(input.data)
+            cle_input = cle.push_zyx(input.data)
             operation = filters[operation];
 
-            output = cle.create_like(input.data)
+            output = cle.create_like(cle_input)
             # concatenate the vale from gpu_operation  as a string
             #command = operation.value + "(cle_input, output, x, y, z)"
             # use evaluate to execute the command
