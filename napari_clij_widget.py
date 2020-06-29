@@ -24,6 +24,15 @@ class gpu_filter(Enum):
     gaussian_blur = 'cle.gaussian_blur'
     crop = 'cle.crop'
 
+filters = {
+    gpu_filter.mean : cle.mean_sphere,
+    gpu_filter.maximum : cle.maximum_sphere,
+    gpu_filter.minimum : cle.minimum_sphere,
+    gpu_filter.top_hat: cle.top_hat_sphere,
+    gpu_filter.gaussian_blur: cle.gaussian_blur,
+    gpu_filter.crop: cle.crop
+}
+
 
 with napari.gui_qt():
     viewer = napari.Viewer()
@@ -38,11 +47,15 @@ with napari.gui_qt():
                     z: float = 0) -> Image:
         if input:
             cle_input = cle.push(input.data)
+            operation = filters[operation];
+
             output = cle.create_like(input.data)
             # concatenate the vale from gpu_operation  as a string
-            command = operation.value + "(cle_input, output, x, y, z)"
+            #command = operation.value + "(cle_input, output, x, y, z)"
             # use evaluate to execute the command
-            eval(command)
+            #eval(command)
+            operation(cle_input, output, x, y, z)
+
             output = cle.pull(output)
             print("output shape", output.shape)
             # reshape image from z,x,y to x,y,z; image is returned as z,x,y from cle push and pull operations
