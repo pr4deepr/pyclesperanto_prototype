@@ -18,7 +18,6 @@ image_3d = io.imread(three_dim)
 class gpu_filter( Enum):
     def __new__(cls, value, operation):
         obj = object.__new__(cls)
-        obj._value_ = operation.__name__
         obj.operation = operation
         return obj
 
@@ -29,12 +28,13 @@ class gpu_filter( Enum):
     top_hat =       (0, cle.top_hat_sphere)
     gaussian_blur = (0, cle.gaussian_blur)
     crop =          (0, cle.crop)
+                     # todo: get rid of the 0
 
 
 with napari.gui_qt():
     viewer = napari.Viewer()
-    viewer.add_image(image_2d, name='2D_image_orig')
     viewer.add_image(image_3d, name='3D_image_orig')
+    viewer.add_image(image_2d, name='2D_image_orig')
 
 
     # use auto_call=True for instantaneous execution
@@ -44,7 +44,7 @@ with napari.gui_qt():
                     z: float = 0) -> Image:
         if input:
             cle_input = cle.push_zyx(input.data)
-            operation = operation.operation #filters[operation]
+            operation = operation.operation
 
             output = cle.create_like(cle_input)
             operation(cle_input, output, x, y, z)
