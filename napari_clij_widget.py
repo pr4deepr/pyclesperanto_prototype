@@ -56,11 +56,7 @@ with napari.gui_qt():
             #eval(command)
             operation(cle_input, output, x, y, z)
 
-            output = cle.pull(output)
-            print("output shape", output.shape)
-            # reshape image from z,x,y to x,y,z; image is returned as z,x,y from cle push and pull operations
-            output = np.swapaxes(output, 0, -1)
-            print("output shape after reshape ", output.shape)
+            output = cle.pull_zyx(output)
             return output
 
 
