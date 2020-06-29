@@ -39,7 +39,7 @@ with napari.gui_qt():
 
     # use auto_call=True for instantaneous execution
     #can add sliders using QSlider, but need to show values
-    @magicgui(call_button='Compute')
+    @magicgui(auto_call=True, call_button='Compute')
     def clij_filter(input: Image, operation: gpu_filter, x: float = 0, y: float = 0,
                     z: float = 0) -> Image:
         if input:
