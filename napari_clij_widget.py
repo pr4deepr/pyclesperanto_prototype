@@ -15,23 +15,20 @@ image_3d = io.imread(three_dim)
 
 # Using Enums for getting a dropdown menu
 # clesperanto functions are not being passed as enum values for some reason, so they are defined as strings
-class gpu_filter(Enum):
-    # using pyclesperanto filtering images with a gpu
-    mean = 'cle.mean_sphere'
-    maximum = 'cle.maximum_sphere'
-    minimum = 'cle.minimum_sphere'
-    top_hat = 'cle.top_hat_sphere'
-    gaussian_blur = 'cle.gaussian_blur'
-    crop = 'cle.crop'
+class gpu_filter( Enum):
+    def __new__(cls, value, operation):
+        obj = object.__new__(cls)
+        obj._value_ = operation.__name__
+        obj.operation = operation
+        return obj
 
-filters = {
-    gpu_filter.mean : cle.mean_sphere,
-    gpu_filter.maximum : cle.maximum_sphere,
-    gpu_filter.minimum : cle.minimum_sphere,
-    gpu_filter.top_hat: cle.top_hat_sphere,
-    gpu_filter.gaussian_blur: cle.gaussian_blur,
-    gpu_filter.crop: cle.crop
-}
+    # using pyclesperanto filtering images with a gpu
+    mean =          (0, cle.minimum_sphere)
+    maximum =       (0, cle.maximum_sphere)
+    minimum =       (0, cle.minimum_sphere)
+    top_hat =       (0, cle.top_hat_sphere)
+    gaussian_blur = (0, cle.gaussian_blur)
+    crop =          (0, cle.crop)
 
 
 with napari.gui_qt():
@@ -47,13 +44,9 @@ with napari.gui_qt():
                     z: float = 0) -> Image:
         if input:
             cle_input = cle.push_zyx(input.data)
-            operation = filters[operation];
+            operation = operation.operation #filters[operation]
 
             output = cle.create_like(cle_input)
-            # concatenate the vale from gpu_operation  as a string
-            #command = operation.value + "(cle_input, output, x, y, z)"
-            # use evaluate to execute the command
-            #eval(command)
             operation(cle_input, output, x, y, z)
 
             output = cle.pull_zyx(output)
